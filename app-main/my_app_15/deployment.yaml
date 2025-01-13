@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  labels:
+    app: flask-app
+spec:
+  replicas: 2  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: your-image-name:your-tag  # Replace with your Docker image
+        ports:
+        - containerPort: 5000  # Port exposed by the container
+        env:
+        - name: FLASK_ENV
+          value: "production"  # Set Flask to production mode
+        resources:
+          requests:
+            memory: "256Mi"  # Minimum memory required
+            cpu: "500m"      # Minimum CPU required
+          limits:
+            memory: "512Mi"  # Maximum memory allowed
+            cpu: "1"         # Maximum CPU allowed
+        livenessProbe:
+          httpGet:
+            path: /health     # Health check endpoint
+            port: 5000
+          initialDelaySeconds: 30  # Wait 30 seconds before checking
+          periodSeconds: 10        # Check every 10 seconds
+        readinessProbe:
+          httpGet:
+            path: /health     # Health check endpoint
+            port: 5000
+          initialDelaySeconds: 30  # Wait 30 seconds before checking
+          periodSeconds: 10        # Check every 10 seconds
